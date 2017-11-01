@@ -1,0 +1,39 @@
+USING PERIODIC COMMIT
+LOAD CSV WITH HEADERS FROM 'file:///Distelec.csv' as CODELEC
+create (b1:CODELEC {CODELEC:CODELEC.CODELEC,Provincia:CODELEC.Provincia,Canton:CODELEC.Canton,Distrito:CODELEC.Distrito})
+
+USING PERIODIC COMMIT
+LOAD CSV WITH HEADERS FROM 'file:///PADRON_COMPLETO_1.csv' as persona
+create (a1:persona {Cedula:persona.Cedula,Sexo:persona.Sexo,Nombre:persona.Nombre,Apellido1:persona.Apellido1,Apellido2:persona.Apellido2})
+
+USING PERIODIC COMMIT 500
+LOAD CSV WITH HEADERS FROM 'file:///CODELEC_1.csv' as csvLine
+MATCH (persona:persona{Cedula: csvLine.Cedula}),(lugar:CODELEC{CODELEC:csvLine.CODELEC})
+CREATE (persona)-[:VIVE]->(lugar)
+
+Lugares de trabajo
+
+Prueba
+MATCH (a:persona),(b:CODELEC)
+WHERE a.Cedula = '107460874' AND b.CODELEC = '101002'
+CREATE (a)-[r:Trabaja{Gana:102.906,En:'PRESIDENCIA DE LA REPUBLICA'}]->(b)
+RETURN r
+
+Para visualizarlo
+MATCH (n {Cedula: '107460874' })-[r]->(c)
+RETURN n,c
+
+Para meter todos
+USING PERIODIC COMMIT 500
+LOAD CSV WITH HEADERS FROM 'file:///Ministerio_presidencia.csv' as csvLine
+MATCH (persona:persona{Cedula: csvLine.Cedula}),(lugar:CODELEC{CODELEC:csvLine.Distelec})
+CREATE (persona)-[r:Trabaja{Gana:toInt(csvLine.Pago),En:csvLine.Institucion}]->(lugar)
+
+
+USING PERIODIC COMMIT 500
+LOAD CSV WITH HEADERS FROM 'file:///Presidencia_Republica.csv' as csvLine
+MATCH (persona:persona{Cedula: csvLine.Cedula}),(lugar:CODELEC{CODELEC:csvLine.Distelec})
+CREATE (persona)-[r:Trabaja{Gana:toInt(csvLine.Pago),En:csvLine.Institucion}]->(lugar)
+
+MATCH (n {Cedula: '107460874' })-[r]->(c)
+RETURN n,c

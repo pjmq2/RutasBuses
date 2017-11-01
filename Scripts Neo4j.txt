@@ -1,9 +1,0 @@
-USING PERIODIC COMMIT
-LOAD CSV WITH HEADERS FROM 'file:///PADRON_COMPLETO_1.csv' as persona
-create (a1:persona {Cedula:persona.Cedula,Sexo:persona.Sexo,Nombre:persona.Nombre,Apellido1:persona.Apellido1,Apellido2:persona.Apellido2})
-
-USING PERIODIC COMMIT
-LOAD CSV WITH HEADERS FROM 'file:///Distelec.csv' as CODELEC
-create (b1:CODELEC {CODELEC:CODELEC.CODELEC,Provincia:CODELEC.Provincia,Canton:CODELEC.Canton,Distrito:CODELEC.Distrito})
-
-Subi hasta Padron_Completo_3
