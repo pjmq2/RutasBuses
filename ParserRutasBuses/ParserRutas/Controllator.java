@@ -7,8 +7,8 @@ public class Controllator {
 
 
     public void init() {
-        parserInfo();
-        //parserGPS();
+        //parserInfo();
+        parserGPS();
     }
 
     public void parserInfo() {
@@ -87,6 +87,55 @@ public class Controllator {
     }
 
     public void parserGPS() {
+        String fileName = "Paradas de Buses.csv";
+        File file = new File(fileName);
+
+        try {
+            Scanner inputStream = new Scanner(file).useDelimiter("\n");
+            PrintWriter ofile = new PrintWriter("RutasGPS.csv");
+
+            ofile.println("Recorrido,Latitud,Longitud");
+            while (inputStream.hasNext()) {
+
+                String ruta = "";
+                String latitud = "";
+                String longitud = "";
+                String allGPS = "";
+                String data = inputStream.nextLine();
+
+
+                if (!data.isEmpty()) {
+
+                    int recorridoBegin = data.indexOf("recorrido</td><td>") + "recorrido</td><td>".length();
+                    int recorridoEnd = data.indexOf("</td>", recorridoBegin);
+                    ruta = (recorridoBegin >= recorridoEnd) ? "NULL" : data.substring(recorridoBegin, recorridoEnd);
+
+                    int gpsBegin = data.lastIndexOf('>') + 4;
+                    int gpsEnd = data.lastIndexOf(",")-2;
+                    allGPS = (gpsBegin >= gpsEnd) ? "NULL" : data.substring(gpsBegin, gpsEnd);
+
+                    System.out.println(allGPS);
+
+
+                        String[] datos = allGPS.split(" ");
+
+
+                    for (int i = 0 ; i< datos.length ; i++) {
+
+                        String[] tripleta = datos[i].split(",");
+                        latitud= tripleta[0];
+                        longitud = tripleta[1];
+
+                        ofile.println(ruta + "," +latitud + "," + longitud);
+                    }
+
+
+                }
+            }
+
+        }catch (Exception e) {
+
+        }
 
     }
 
