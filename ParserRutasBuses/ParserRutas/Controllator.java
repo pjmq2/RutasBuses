@@ -7,7 +7,7 @@ public class Controllator {
 
 
     public void init() {
-        //parserInfo();
+        parserInfo();
         parserGPS();
     }
 
@@ -123,8 +123,8 @@ public class Controllator {
                     for (int i = 0 ; i< datos.length ; i++) {
 
                         String[] tripleta = datos[i].split(",");
-                        latitud= tripleta[0];
-                        longitud = tripleta[1];
+                        latitud= tripleta[1];
+                        longitud = tripleta[0];
 
                         ofile.println(ruta + "," +latitud + "," + longitud);
                     }
