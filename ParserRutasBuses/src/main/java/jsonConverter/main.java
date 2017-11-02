@@ -1,13 +1,50 @@
 package jsonConverter;
 
-import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
-import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.Scanner;
 
 public class main {
-    public static void main(String[] args){
+    public static void main(String[] args) {
+        try {
+            otro("9.902208","-84.073457");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        // https://geocode.xyz/9.902208,-84.073457?geoit=json
+    }
+
+    public static void otro(String latitud, String longitud) throws IOException {
+
+        String sURL = "https://geocode.xyz/" ;
+        sURL = sURL.concat(latitud);
+        sURL = sURL.concat(",");
+        sURL = sURL.concat(longitud);
+        sURL = sURL.concat("?geoit=json");
+
+        System.out.println(sURL);
+
+        // Connect to the URL using java's native library
+        URL url = new URL(sURL);
+        HttpURLConnection request = (HttpURLConnection) url.openConnection();
+        request.setRequestProperty("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2");
+        request.connect();
+
+        // Convert to a JSON object to print data
+        JsonParser jp = new JsonParser(); //from gson
+        JsonElement root = jp.parse(new InputStreamReader((InputStream) request.getContent())); //Convert the input stream to a json element
+        JsonObject rootobj = root.getAsJsonObject(); //May be an array, may be an object.
+        String distrito = rootobj.get("city").getAsString();
+        System.out.println(root.toString());
+        System.out.println(distrito);
+    }
+
+    public void parser(){
         String fileName = "Paradas de Buses.csv";
         File file = new File(fileName);
         try {
@@ -32,8 +69,5 @@ public class main {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-
     }
-
-
 }
