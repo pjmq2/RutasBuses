@@ -1,7 +1,8 @@
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.Scanner;
+import java.util.StringJoiner;
+
+import static javax.script.ScriptEngine.FILENAME;
 
 public class Controllator {
 
@@ -9,24 +10,27 @@ public class Controllator {
     public void init() {
         parserInfo();
         parserGPS();
+        //imprimir();
     }
 
     public void parserInfo() {
-        String fileName = "Paradas de Buses.csv";
-        File file = new File(fileName);
+
 
         try {
-            Scanner inputStream = new Scanner(file).useDelimiter("\n");
+            BufferedReader br = new BufferedReader(new FileReader("Paradas de Buses.csv"));
+
+
             PrintWriter ofile = new PrintWriter("RutasInfo.csv");
 
             ofile.println("Ruta,Recorrido,Distancia,Empresa");
 
+            String data;
 
             int dataIndex = 0;
 
             int limitador = 0;
             int columna = 0;
-            while (inputStream.hasNext()) {
+            while ((data = br.readLine()) != null) {
 
                 String ruta = "";
                 String recorrido  = "";
@@ -34,7 +38,6 @@ public class Controllator {
                 String numRutas  = "";
                 String empresa  = "";
 
-                String data = inputStream.nextLine();
 
 
                 if (!data.isEmpty()) {
@@ -51,7 +54,7 @@ public class Controllator {
                     int recorridoBegin = html.indexOf("recorrido</td><td>") + "recorrido</td><td>".length();
                     int recorridoEnd = html.indexOf("</td>", recorridoBegin);
                     recorrido = (recorridoBegin >= recorridoEnd) ? "NULL" : html.substring(recorridoBegin, recorridoEnd);
-
+                    recorrido = recorrido.replace(",","/");
                     //System.out.println(recorrido);
 
                     int distanciaBegin = html.indexOf("Length</td><td>") + "Length</td><td>".length();
@@ -63,12 +66,14 @@ public class Controllator {
                     int numRutaBegin = html.indexOf("ruta</td><td>") + "ruta</td><td>".length();
                     int numRutaEnd = html.indexOf("</td>", numRutaBegin);
                     numRutas = (numRutaBegin >= numRutaEnd) ? "NULL" : html.substring(numRutaBegin, numRutaEnd);
+                    numRutas = numRutas.replace(",","/");
                     //System.out.println(numRutas);
 
 
                     int empresaBegin = numRutas.indexOf("(") + "(".length();
                     int empresaEnd = numRutas.indexOf(")",empresaBegin);
                     empresa =(empresaBegin>=empresaEnd)? "NULL" : numRutas.substring(empresaBegin,empresaEnd);
+                    empresa = empresa.replaceAll(",","/");
                     //System.out.println(empresa);
 
                     ofile.println(ruta+","+recorrido+","+distancia+","+empresa);
@@ -78,30 +83,36 @@ public class Controllator {
                     }
                 }
             }
-            inputStream.close();
             ofile.close();
             System.out.println(limitador);
-        } catch (FileNotFoundException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     public void parserGPS() {
-        String fileName = "Paradas de Buses.csv";
-        File file = new File(fileName);
+
+        BufferedReader br = null;
+        try {
+            br = new BufferedReader(new FileReader("Paradas de Buses.csv"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
 
         try {
-            Scanner inputStream = new Scanner(file).useDelimiter("\n");
+
             PrintWriter ofile = new PrintWriter("RutasGPS.csv");
 
             ofile.println("Recorrido,Latitud,Longitud");
-            while (inputStream.hasNext()) {
+
+            String data;
+            while ((data = br.readLine()) != null) {
 
                 String ruta = "";
                 String latitud = "";
                 String longitud = "";
                 String allGPS = "";
-                String data = inputStream.nextLine();
+
 
 
                 if (!data.isEmpty()) {
@@ -109,7 +120,8 @@ public class Controllator {
                     int recorridoBegin = data.indexOf("recorrido</td><td>") + "recorrido</td><td>".length();
                     int recorridoEnd = data.indexOf("</td>", recorridoBegin);
                     ruta = (recorridoBegin >= recorridoEnd) ? "NULL" : data.substring(recorridoBegin, recorridoEnd);
-
+                    ruta = ruta.replace(",","/");
+                    
                     int gpsBegin = data.lastIndexOf('>') + 4;
                     int gpsEnd = data.lastIndexOf(",")-2;
                     allGPS = (gpsBegin >= gpsEnd) ? "NULL" : data.substring(gpsBegin, gpsEnd);
@@ -139,6 +151,22 @@ public class Controllator {
 
     }
 
+
+    public void imprimir() {
+
+        try (BufferedReader br = new BufferedReader(new FileReader("Paradas de Buses.csv"))) {
+
+            String sCurrentLine;
+
+            while ((sCurrentLine = br.readLine()) != null) {
+                System.out.println(sCurrentLine);
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
 
     public static void main(String[] args) {
         Controllator controllator = new Controllator();
