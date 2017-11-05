@@ -9,23 +9,24 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Scanner;
 
-public class main {
-    public static void main(String[] args) {
+public class main{
+    public static void main(String[] args){
         try {
             otro("9.902208","-84.073457");
         } catch (IOException e) {
             e.printStackTrace();
         }
         // https://geocode.xyz/9.902208,-84.073457?geoit=json
+        //http://nominatim.openstreetmap.org/search/9.902208,-84.073457?format=json
     }
 
     public static void otro(String latitud, String longitud) throws IOException {
 
-        String sURL = "https://geocode.xyz/" ;
+        String sURL = "http://nominatim.openstreetmap.org/search/";
         sURL = sURL.concat(latitud);
         sURL = sURL.concat(",");
         sURL = sURL.concat(longitud);
-        sURL = sURL.concat("?geoit=json");
+        sURL = sURL.concat("?format=json");
 
         System.out.println(sURL);
 
