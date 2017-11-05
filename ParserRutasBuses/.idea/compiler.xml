@@ -6,10 +6,12 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="ParserRutasBuses" />
         <module name="RutasBuses" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="ParserRutasBuses" target="1.5" />
       <module name="RutasBuses" target="1.5" />
     </bytecodeTargetLevel>
   </component>
