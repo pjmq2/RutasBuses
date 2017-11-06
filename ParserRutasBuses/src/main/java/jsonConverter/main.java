@@ -3,24 +3,24 @@ package jsonConverter;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.sun.rmi.rmid.ExecOptionPermission;
 
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Scanner;
 
-public class main{
-    public static void main(String[] args){
+public class main {
+    public static void main(String[] args) {
         try {
-            otro("9.902208","-84.073457");
-        } catch (IOException e) {
+            locate("9.917", "-84.04054");
+        } catch (Exception e) {
             e.printStackTrace();
         }
         // https://geocode.xyz/9.902208,-84.073457?geoit=json
         //http://nominatim.openstreetmap.org/search/9.902208,-84.073457?format=json
     }
 
-    public static void otro(String latitud, String longitud) throws IOException {
+    public static void locate(String latitud, String longitud) throws Exception {
 
         String sURL = "http://nominatim.openstreetmap.org/search/";
         sURL = sURL.concat(latitud);
@@ -39,36 +39,54 @@ public class main{
         // Convert to a JSON object to print data
         JsonParser jp = new JsonParser(); //from gson
         JsonElement root = jp.parse(new InputStreamReader((InputStream) request.getContent())); //Convert the input stream to a json element
-        System.out.print(root.toString());
-        //JsonObject rootobj = root.getAsJsonObject(); //May be an array, may be an object.
-        //String distrito = rootobj.get("city").getAsString();
+
+        String incorrectJson = root.toString();
         //System.out.println(root.toString());
-        //System.out.println(distrito);
+        int importanceIndex = incorrectJson.indexOf("importance");
+        incorrectJson = incorrectJson.substring(0, importanceIndex + 12) + "\"" + incorrectJson.substring(importanceIndex + 12);
+        incorrectJson = incorrectJson.substring(0, importanceIndex + 18) + "\"" + incorrectJson.substring(importanceIndex + 18);
+        incorrectJson = incorrectJson.substring(1, incorrectJson.length()-1);
+        System.out.println(incorrectJson);
+        root = jp.parse(incorrectJson);
+
+        JsonObject rootobj = root.getAsJsonObject(); //May be an array, may be an object.
+        String placeName = rootobj.get("display_name").getAsString();
+        System.out.println(root.toString());
+        //System.out.println(placeName);
+
+        String[] values;
+        //placeName = placeName.replaceAll("\\s+","");
+        values = placeName.split(",");
+        values[3] = values[3].substring(1, values[3].length());
+
+        System.out.println(values[3]);
     }
 
-    public void parser(){
-        String fileName = "Paradas de Buses.csv";
-        File file = new File(fileName);
+    public static void parser(){
         try {
-            Scanner inputStream = new Scanner(file);
-            int limitador = 0;
-            int columna = 0;
-            while(inputStream.hasNext() && limitador<700 ){
-                String data = inputStream.next();
-                if(data.contains("\",\"")){
-                    String[] valores = data.split("\",\"");
-                    System.out.print(valores[0]);
-                    System.out.println();
-                    System.out.println();
-                    System.out.print(valores[1]);
+            String fileName = "RutasGPS.csv";
+
+            BufferedReader br = new BufferedReader(new FileReader(fileName));
+
+            PrintWriter ofile = new PrintWriter(fileName);
+            ofile.println("Ruta,Recorrido,Distancia,Empresa");
+
+            String data = br.readLine();
+            String[] items;
+
+            while ((data = br.readLine()) != null){
+                boolean repeat = true;
+                while (repeat) {
+                    try {
+                        items = data.split(",");
+                        //locate(items[1], items[2]);
+                        repeat = false;
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
-                else{
-                    System.out.print(data);
-                }
-                limitador ++;
             }
-            inputStream.close();
-        } catch (FileNotFoundException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
