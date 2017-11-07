@@ -12,9 +12,11 @@ public class Control {
     Set<StringPair> pairsSet;
     PrintWriter ofile;
     String oldRoute = "";
+    String newline;
 
     public Control(){
         pairsSet = new HashSet<>();
+        newline = System.getProperty("line.separator");
         try {
             ofile = new PrintWriter("Distritos.csv");
             ofile.close();
@@ -72,7 +74,7 @@ public class Control {
             System.out.println(routeName + ", " + district);
             //ofile.println(routeName + "," + district);
             Writer output = new BufferedWriter(new FileWriter("Distritos.csv", true));  //clears file every time
-            output.append(System.getProperty("line.separator") + routeName + "," + district);
+            output.append(newline + routeName + "," + district);
             output.close();
         }
     }
