@@ -9,10 +9,11 @@ import java.util.Set;
 
 public class Control {
 
-    Set<StringPair> pairsSet;
-    PrintWriter ofile;
+    private Set<StringPair> pairsSet;
+    private PrintWriter ofile;
     String oldRoute = "";
     String newline;
+    HttpURLConnection request;
 
     public Control(){
         pairsSet = new HashSet<>();
@@ -39,7 +40,7 @@ public class Control {
 
         // Connect to the URL using java's native library
         URL url = new URL(sURL);
-        HttpURLConnection request = (HttpURLConnection) url.openConnection();
+        request = (HttpURLConnection) url.openConnection();
         request.setRequestProperty("User-Agent", "Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10.4; en-US; rv:1.9.2.2) Gecko/20100316 Firefox/3.6.2");
         request.connect();
 
@@ -77,6 +78,7 @@ public class Control {
             output.append(newline + routeName + "," + district);
             output.close();
         }
+        request.disconnect();
     }
 
     public void parser(){
