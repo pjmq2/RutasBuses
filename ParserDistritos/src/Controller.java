@@ -31,15 +31,12 @@ public class Controller {
 
     public void locate(String routeName, String latitud, String longitud) throws Exception {
 
+        //http://nominatim.openstreetmap.org/search/9.902208,-84.073457?format=json
         String sURL = "http://nominatim.openstreetmap.org/search/";
         sURL = sURL.concat(latitud);
         sURL = sURL.concat(",");
         sURL = sURL.concat(longitud);
         sURL = sURL.concat("?format=json");
-
-        //http://nominatim.openstreetmap.org/search/9.902208,-84.073457?format=json
-
-        //System.out.println(sURL);
 
         // Connect to the URL using java's native library
         URL url = new URL(sURL);
@@ -56,7 +53,6 @@ public class Controller {
         location = location.substring(index1+15);
         int index2 = location.indexOf("\"");
         location = location.substring(0, index2);
-        //System.out.println(location);
 
         String[] values;
         values = location.split(",");
@@ -68,23 +64,25 @@ public class Controller {
                 found = true;
             }
         }
+
         if(routeName.equals(oldRoute)){
             pairsSet.clear();
             oldRoute = routeName;
         }
+
         String district = values[districtIndex].substring(1);
         boolean success = pairsSet.add(new StringPair(routeName, district));
         if(success){
-            System.out.println(routeName + ", " + district);
+            System.out.println(routeName + ", " + district + ", " + values[districtIndex+1].substring(8));
             //ofile.println(routeName + "," + district);
             Writer output = new BufferedWriter(new FileWriter("Distritos.csv", true));  //clears file every time
             output.append(newline + routeName + "," + district);
             output.close();
         }
         request.disconnect();
-        counter++;
+        //counter++;
         //TimeUnit.SECONDS.sleep(1);
-        System.out.println(counter);
+        //System.out.println(counter);
     }
 
     public void parser(){
@@ -108,12 +106,13 @@ public class Controller {
                         //System.out.println(((10*60)-elapsedTime));
                     } catch (Exception e) {
                         e.printStackTrace();
-                        elapsedTime = (System.currentTimeMillis() - startTime)/1000;
-                        if(elapsedTime<600){
-                            System.out.println("Límite de 10 mins alcanzado, esperar: " + ((10*60)-elapsedTime) + " segundos.");
-                            TimeUnit.SECONDS.sleep((10*60)-elapsedTime);
-                        }
-                        startTime = System.currentTimeMillis();
+                        request.disconnect();
+                        //elapsedTime = (System.currentTimeMillis() - startTime)/1000;
+                        //if(elapsedTime<600){
+                        //    System.out.println("Límite de 10 mins alcanzado, esperar: " + ((10*60)-elapsedTime) + " segundos.");
+                            TimeUnit.SECONDS.sleep(600);
+                        //}
+                        //startTime = System.currentTimeMillis();
                     }
                 }
             }
