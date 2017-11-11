@@ -15,9 +15,11 @@ public class Controller {
     String oldRoute = "";
     String newline;
     HttpURLConnection request;
+    int counter;
 
     public Controller(){
         pairsSet = new HashSet<>();
+        counter = 0;
         newline = System.getProperty("line.separator");
         try {
             ofile = new PrintWriter("Distritos.csv");
@@ -80,7 +82,9 @@ public class Controller {
             output.close();
         }
         request.disconnect();
-        TimeUnit.SECONDS.sleep(1);
+        counter++;
+        //TimeUnit.SECONDS.sleep(1);
+        System.out.println(counter);
     }
 
     public void parser(){
@@ -100,13 +104,16 @@ public class Controller {
                         items = data.split(",");
                         locate(items[0], items[1], items[2]);
                         repeat = false;
-                        elapsedTime = (System.currentTimeMillis() - startTime)/1000;
-                        System.out.println(((10*60)-elapsedTime));
+                        //elapsedTime = (System.currentTimeMillis() - startTime)/1000;
+                        //System.out.println(((10*60)-elapsedTime));
                     } catch (Exception e) {
                         e.printStackTrace();
                         elapsedTime = (System.currentTimeMillis() - startTime)/1000;
-                        System.out.println("Límite de 10 mins alcanzado, esperar: " + ((10*60)-elapsedTime));
-                        TimeUnit.SECONDS.sleep((10*60)-elapsedTime);
+                        if(elapsedTime<600){
+                            System.out.println("Límite de 10 mins alcanzado, esperar: " + ((10*60)-elapsedTime) + " segundos.");
+                            TimeUnit.SECONDS.sleep((10*60)-elapsedTime);
+                        }
+                        startTime = System.currentTimeMillis();
                     }
                 }
             }
